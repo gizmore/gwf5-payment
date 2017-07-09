@@ -2,16 +2,21 @@
 abstract class GWF_PaymentModule extends GWF_Module
 {
 	/**
-	 * @return GWF_PaymentModule[string]
+	 * @var GWF_PaymentModule[]
+	 */
+	private static $paymentModules = [];
+	/**
+	 * @return GWF_PaymentModule[]
 	 */
 	public static function allPaymentModules() { return self::$paymentModules; }
-	private static $paymentModules = [];
 	
+
 	public $module_priority = 25;
 
 	public function initModule()
 	{
 		self::$paymentModules[$this->getName()] = $this;
+		return parent::initModule();
 	}
 	
 	public function getConfig()
@@ -21,8 +26,26 @@ abstract class GWF_PaymentModule extends GWF_Module
 		);
 	}
 	
+	public function cfgFeeBuy() { return $this->getConfigValue('fee_buy'); }
+	
+	public function getPrice($price)
+	{
+		return round(($this->cfgFeeBuy() + 1.00) * floatval($price), 2);
+	}
+	
+	public function displayPaymentFee()
+	{
+		return sprintf('%.03f%%', $this->cfgFeeBuy());
+	}
+	
 	public function makePaymentButton(string $href)
 	{
-		return $this->templatePHP('button.php', ['href' => $href]);
+		return GDO_Button::make('buy_'.$this->getName())->href($href)->icon('attach_money');
+// 		return $this->templatePHP('button.php', ['href' => $href]);
+	}
+	
+	public function renderOrderFragment(GWF_Order $order)
+	{
+		return '';
 	}
 }

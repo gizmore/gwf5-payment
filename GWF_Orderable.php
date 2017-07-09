@@ -1,6 +1,11 @@
 <?php
 interface GWF_Orderable
 {
-	public function getPrice();
-	public function canPayWith(GWF_PaymentModule $module);
+	public function getOrderCancelURL(GWF_User $user);
+	public function getOrderSuccessURL(GWF_User $user);
+
+	public function getOrderTitle(string $iso);
+	public function getOrderPrice();
+	public function canPayOrderWith(GWF_PaymentModule $module);
+	public function onOrderPaid();
 }

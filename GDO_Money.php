@@ -1,6 +1,7 @@
 <?php
 class GDO_Money extends GDO_Decimal
 {
+	public static $CURR = '€';
 	public static $CURRENCY = 'EUR';
 	
 	public $digitsBefore = 7;
@@ -14,7 +15,7 @@ class GDO_Money extends GDO_Decimal
 		{
 			return '---';
 		}
-		return sprintf('€%.02f', $value);
+		return sprintf('%s%.02f', self::$CURR, $value);
 	}
 	
 	
