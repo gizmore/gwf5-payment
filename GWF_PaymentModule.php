@@ -38,6 +38,10 @@ abstract class GWF_PaymentModule extends GWF_Module
 		return sprintf('%.03f%%', $this->cfgFeeBuy());
 	}
 	
+	/**
+	 * @param string $href
+	 * @return GDO_Button
+	 */
 	public function makePaymentButton(string $href)
 	{
 		return GDO_Button::make('buy_'.$this->getName())->href($href)->icon('attach_money');

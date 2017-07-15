@@ -14,15 +14,16 @@ abstract class GWF_MethodPayment extends GWF_Method
 			{
 				if (!$this->order->isPersisted())
 				{
-					return $this->order->insert();
+					$this->order->insert();
 				}
 			}
 		}
+		return $this->order;
 	}
 	
-	public function getOrder()
-	{
-	}
+// 	public function getOrder()
+// 	{
+// 	}
 	
 	public function renderOrder(GWF_Order $order)
 	{

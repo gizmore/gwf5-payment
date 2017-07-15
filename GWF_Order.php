@@ -1,4 +1,17 @@
 <?php
+/**
+ * Serializes an orderable.
+ * Stores price and item description.
+ * 
+ * @author gizmore
+ * @since 3.0
+ * @version 5.0
+ * 
+ * @see GWF_Orderable
+ * @see GDO_Money
+ * @see GWF_Currency
+ * @see GWF_PaymentModule
+ */
 final class GWF_Order extends GDO
 {
 	public function gdoColumns()
@@ -20,8 +33,21 @@ final class GWF_Order extends GDO
 	
 	public function href_edit() { return href('Payment', 'Order', '&id='.$this->getID()); }
 	public function href_view() { return href('Payment', 'ViewOrder', '&id='.$this->getID()); }
+	public function href_failure() { return $this->getOrderable()->getOrderCancelURL(GWF_User::current()); }
+	public function href_success() { return $this->getOrderable()->getOrderSuccessURL(GWF_User::current()); }
+
+	public function redirectFailure() { return GWF_Website::redirectMessage($this->href_failure()); }
+	public function redirectSuccess() { return GWF_Website::redirectMessage($this->href_success()); }
+	
+	public function getCreator() { return $this->getValue('order_by'); }
+	public function getCreatorID() { return $this->getVar('order_by');  }
+	public function isCreator(GWF_User $user) { return $this->getCreatorID() === $user->getID(); }
 	
 	public function getXToken() { return $this->getVar('order_xtoken'); }
+	public function isPaid() { return $this->getPaid() !== null; }
+	public function getPaid() { return $this->getVar('order_paid'); }
+	public function isExecuted() { return $this->getExecuted() !== null; }
+	public function getExecuted() { return $this->getVar('order_executed'); }
 	
 	/**
 	 * @return GWF_User
@@ -58,5 +84,19 @@ final class GWF_Order extends GDO
 	public function renderCard()
 	{
 		return GWF_Template::modulePHP('Payment', 'card/order.php', ['gdo' => $this]);
+	}
+	
+	###############
+	### Execute ###
+	###############
+	public function executeOrder()
+	{
+		$user = $this->getUser();
+		$orderable = $this->getOrderable();
+		
+		$response = $orderable->onOrderPaid();
+		$this->saveVar('order_executed', GWF_Time::getDate());
+		
+		return GWF_Message::message('msg_order_execute')->add($response)->add($this->redirectSuccess());
 	}
 }
