@@ -4,7 +4,7 @@ class GDO_Money extends GDO_Decimal
 	public static $CURR = '€';
 	public static $CURRENCY = 'EUR';
 	
-	public $digitsBefore = 7;
+	public $digitsBefore = 13;
 	public $digitsAfter = 2;
 	
 	public function defaultLabel() { return $this->label('price'); }
